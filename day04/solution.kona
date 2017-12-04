@@ -1,0 +1,5 @@
+/ curiously much slower than k6 solution
+t:" "\'0:`input
++/{~+/~':x@<x}'t
++/{~+/~':x@<x}'{x@<x}''t
+\\
