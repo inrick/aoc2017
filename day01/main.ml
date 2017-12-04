@@ -12,7 +12,7 @@ let solve xs offset =
   let open Array in
   let n = length xs in
   xs
-  |> filteri ~f:(fun i x -> x = xs.(Caml.(mod) (offset+i) n))
+  |> filteri ~f:(fun i x -> x = xs.((offset+i) % n))
   |> fold ~init:0 ~f:(+)
 
 let () =
