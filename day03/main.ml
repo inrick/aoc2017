@@ -8,7 +8,7 @@ let walk () =
   let dirs = [|1,0; 0,1; -1,0; 0,-1|] in
   let dir i = dirs.(i%4) in
   let scan init f =
-    unfold_with ~init ~f:(fun x y -> Step.Yield (f x y, f x y))
+    unfold_with ~init ~f:(fun x y -> let z = f x y in Step.Yield (z, z))
   in
   let where = concat_mapi ~f:(fun i x -> take (repeat i) x) in
   repeat 2 |> where >>| (+) 1 |> where >>| dir |> scan (0,0) (+|)
