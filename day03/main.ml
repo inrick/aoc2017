@@ -4,15 +4,14 @@ open Stdio
 let (+|) (a,b) (c,d) = a+c, b+d
 
 let walk () =
+  let open Sequence in
   let dirs = [|1,0; 0,1; -1,0; 0,-1|] in
-  (* position, repeat, step, until, direction *)
-  Sequence.unfold ~init:((0,0), 0, 0, 1, 0) ~f:(fun (pos, r, s, n, d) ->
-    let pos' = pos +| dirs.(d) in
-    let r' = r+1 in
-    let s' = if r' = n then s+1 else s in
-    let n' = if s' = 2 then n+1 else n in
-    let d' = if s <> s' then (d+1)%4 else d in
-    Some (pos', (pos', r'%n, s'%2, n', d')))
+  let dir i = dirs.(i%4) in
+  let scan init f =
+    unfold_with ~init ~f:(fun x y -> Step.Yield (f x y, f x y))
+  in
+  let where = concat_mapi ~f:(fun i x -> take (repeat i) x) in
+  repeat 2 |> where >>| (+) 1 |> where >>| dir |> scan (0,0) (+|)
 
 let sum_of_neighbors () =
   let neighbors pos =
