@@ -15,7 +15,7 @@ let walk () =
 
 let sum_of_neighbors () =
   let neighbors pos =
-    List.([1,0; 1,1; 0,1; -1,1; -1,0; -1,-1; 0,-1; 1,-1] >>| ((+|) pos))
+    List.([1,0; 1,1; 0,1; -1,1; -1,0; -1,-1; 0,-1; 1,-1] >>| (+|) pos)
   in
   let h = Hashtbl.Poly.create () in
   let add pos v = Hashtbl.add_exn h ~key:pos ~data:v in
