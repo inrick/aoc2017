@@ -3,6 +3,8 @@ open Stdio
 
 type t = T of string * int * t list [@@deriving sexp]
 
+let weight (T (_, w, _)) = w
+
 let show x = sexp_of_t x |> Sexp.to_string_hum
 
 let parse s =
@@ -25,4 +27,8 @@ let () =
     |> max_elt ~cmp:(fun x y -> depth x - depth y)
     |> Option.value_exn
   in
-  printf "a) %s\n" root_name
+  printf "a) %s\n" root_name;
+  let rec go (T (x, w, xs)) =
+    let ys = xs >>| go in
+    T (x, w + (ys >>| weight |> lsum), ys) in
+  go root |> show |> print_endline
