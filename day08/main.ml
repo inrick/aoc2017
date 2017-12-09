@@ -2,50 +2,39 @@ open Base
 open Stdio
 
 type reg = string
-type op = int -> int -> int
-type cond = int -> int -> bool
-type instr = { reg : reg; op : op * int; cond : cond * reg * int }
+type instr = { reg : reg; op : int -> int; cond : (int -> bool) * reg }
 
 let parse s =
   let open Caml.Scanf in
   sscanf s "%s %s %d if %s %s %d" (fun reg op magn reg2 cond magn2 ->
     let cond = match cond with
-      | "==" -> (=)
-      | "!=" -> (<>)
-      | "<" -> (<)
-      | ">" -> (>)
-      | "<=" -> (<=)
-      | ">=" -> (>=)
+      | "==" -> fun x -> x = magn2
+      | "!=" -> fun x -> x <> magn2
+      | "<" -> fun x -> x < magn2
+      | ">" -> fun x -> x > magn2
+      | "<=" -> fun x -> x <= magn2
+      | ">=" -> fun x -> x >= magn2
       | _ -> assert false in
     let op = match op with
-      | "inc" -> (+)
-      | "dec" -> (-)
+      | "inc" -> fun x -> x + magn
+      | "dec" -> fun x -> x - magn
       | _ -> assert false in
-    { reg; op = op, magn; cond = cond, reg2, magn2 })
-
-let exec instrs =
-  let regs = List.(instrs
-    >>| (fun i -> i.reg)
-    |> dedup ~compare:String.compare
-    |> to_array) in
-  let find_reg s = Array.findi_exn regs ~f:(fun _ -> String.(=) s) |> fst in
-  let array_max xs = Array.max_elt xs ~cmp:Int.compare |> Option.value_exn in
-  let n = Array.length regs in
-  let c = Array.create ~len:n 0 in
-  let maxreg = ref 0 in
-  let step { reg; op = op, magn; cond = cond, reg2, magn2 } =
-    let m' = array_max c in
-    if m' > !maxreg then maxreg := m';
-    let i = find_reg reg in
-    let reg2 = c.(find_reg reg2) in
-    if cond reg2 magn2 then c.(i) <- op c.(i) magn
-  in
-  List.iter instrs ~f:step;
-  array_max c, !maxreg
+    { reg; op; cond = cond, reg2 })
 
 let () =
   let open List in
-  let instrs = In_channel.read_lines "input" |> List.map ~f:parse in
-  let a, b = exec instrs in
-  printf "a) %d\n" a;
-  printf "b) %d\n" b
+  let instrs = In_channel.read_lines "input" >>| parse in
+  let init = Map.empty (module String), 0 in
+  let max_value m = Map.to_alist m >>| snd |> reduce_exn ~f:max in
+  let end_state, max_reg = fold instrs ~init ~f:(fun (state, m) instr ->
+    let { reg; op; cond = cond, reg2 } = instr in
+    let find r = Map.find state r |> Option.value ~default:0 in
+    if cond (find reg2) then
+      let state = Map.update state reg ~f:(function
+        | None -> op 0
+        | Some x -> op x) in
+      state, max m (max_value state)
+    else state, m)
+  in
+  printf "a) %d\n" (max_value end_state);
+  printf "b) %d\n" max_reg
