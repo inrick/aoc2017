@@ -11,10 +11,10 @@ let () =
     | Regular, '<'::xs -> go prev sum nc Garbage xs
     | Regular, '{'::xs -> go (prev+1) (sum+prev+1) nc Regular xs
     | Regular, '}'::xs -> go (prev-1) sum nc Regular xs
-    | Regular, x::xs -> go prev sum nc Regular xs
+    | Regular, _::xs -> go prev sum nc Regular xs
     | Garbage, '>'::xs -> go prev sum nc Regular xs
     | Garbage, '!'::_::xs -> go prev sum nc Garbage xs
-    | Garbage, x::xs -> go prev sum (nc+1) Garbage xs
+    | Garbage, _::xs -> go prev sum (nc+1) Garbage xs
   in
   let a, b = go 0 0 0 Regular t in
   printf "a) %d\n" a;
