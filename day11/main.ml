@@ -17,6 +17,7 @@ let () =
   in
   let t = In_channel.read_lines "input" >>= String.split ~on:',' in
   let walk = t >>| Map.find_exn coord |> scan (0,0) (+|) in
+  (* TODO this is not correct, just happened to work with my input, fix *)
   let dist0 (x,y) = (abs y - abs x)/2 + abs x in
   printf "a) %d\n" (walk |> last_exn |> dist0);
   printf "b) %d\n" (walk >>| dist0 |> reduce_exn ~f:max)
