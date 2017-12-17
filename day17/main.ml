@@ -5,10 +5,9 @@ let insert xs x i =
   let open Array in
   let n = length xs in
   let i = i+1 in
-  let ys = create ~len:(n+1) 0 in
+  let ys = create ~len:(n+1) x in
   blit ~src:xs ~src_pos:0 ~dst:ys ~dst_pos:0 ~len:i;
   blit ~src:xs ~src_pos:i ~dst:ys ~dst_pos:(i+1) ~len:(n-i);
-  ys.(i) <- x;
   ys
 
 let () =
