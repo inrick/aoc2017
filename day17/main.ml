@@ -14,8 +14,7 @@ let () =
   let step = 382 in
   let a =
     let rec go n pos xs =
-      if n = 2018 then xs
-      else
+      if n = 2018 then xs else
         let pos = (1+step+pos) % n in
         go (n+1) pos (insert xs n pos) in
     let xs = go 1 0 [|0|] in
@@ -24,8 +23,7 @@ let () =
   printf "a) %d\n" a;
   let b =
     let rec go after0 n pos =
-      if n = 50_000_000 then after0
-      else
+      if n = 50_000_000 then after0 else
         let pos = (1+step+pos) % n in
         let after0 = if pos = 0 then n else after0 in
         go after0 (n+1) pos in
