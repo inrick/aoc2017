@@ -68,7 +68,25 @@ let execute init instrs =
     | exception _ -> st.mul in
   go init
 
+let isprime n =
+  let rec go i =
+    if i*i > n then true
+    else if n % i = 0 then false
+    else go (i+1) in
+  if n < 2 then false else go 2
+
 let () =
   let regs, instrs = parse (In_channel.read_lines "input") in
   let a = execute (create regs) instrs in
-  printf "a) %d\n" a
+  printf "a) %d\n" a;
+  let b = (* manually translated from input data *)
+    let b = 79*100 + 100_000 in
+    let c = b + 17_000 in
+    let rec go b h =
+      if b > c then h else begin
+        let h = if isprime b then h else h+1 in
+        go (b+17) h
+      end
+    in
+    go b 0 in
+  printf "b) %d\n" b;
