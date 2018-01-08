@@ -4,4 +4,4 @@ all:
 run: all
 	./_build/default/main.exe
 clean:
-	-rm -rf _build
+	-rm -rf _build a.out
